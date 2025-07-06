@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CleanTech - Waste Identification Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: #22c55e;
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .image-card img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .image-info {
+            text-align: center;
+            color: #666;
+        }
+
+        .results-card {
+            text-align: center;
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .classification-result {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .organic {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .plastic {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .paper {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .metal {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .glass {
+            background: #cffafe;
+            color: #0f766e;
+        }
+
+        .electronic {
+            background: #e9d5ff;
+            color: #7c3aed;
+        }
+
+        .detailed-info {
+            grid-column: 1 / -1;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .info-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .recycling-section {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+        }
+
+        .environmental-section {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .instructions-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+            color: #555;
+        }
+
+        .instructions-list li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .error-state h2 {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .classification-result {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="home.html" class="back-btn">← Back to Home</a>
+            <h1 id="headerTitle">♻️ Waste Identification Results</h1>
+        </div>
+
+        <div id="resultsContent">
+            <!-- Results will be populated by JavaScript -->
+        </div>
+
+        <div id="errorState" class="error-state" style="display: none;">
+            <h2>⚠️ No Results Found</h2>
+            <p>Please upload an image first.</p>
+            <a href="home.html" class="btn">Go Back</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const identifiedWaste = localStorage.getItem('identifiedWaste');
+            const originalImage = localStorage.getItem('originalImage');
+
+            if (!identifiedWaste || !originalImage) {
+                document.getElementById('errorState').style.display = 'block';
+                return;
+            }
+
+            displayWasteResults(identifiedWaste, originalImage);
+        });
+
+        function displayWasteResults(wasteType, imageUrl) {
+            const wasteData = getWasteData();
+            const confidence = localStorage.getItem('confidence') || '0.89';
+            const waste = wasteData[wasteType];
+            
+            const resultsHTML = `
+                <div class="results-container">
+                    <div class="card image-card">
+                        <img src="${imageUrl}" alt="Identified waste image">
+                        <div class="image-info">
+                            <strong>Your Uploaded Image</strong>
+                            <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                                AI Confidence: ${(parseFloat(confidence) * 100).toFixed(1)}%
+                            </p>
+                            <div style="margin-top: 10px; padding: 10px; background: #f0fdf4; border-radius: 8px; font-size: 0.85rem;">
+                                <strong>🔍 Analysis:</strong><br>
+                                ${getWasteAnalysisDescription(wasteType)}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card results-card">
+                        <div class="result-icon">🎯</div>
+                        <div class="result-title">Waste Identified</div>
+                        
+                        <div class="classification-result ${wasteType}">
+                            ${waste.icon} ${waste.name}
+                        </div>
+                        
+                        <p style="margin-top: 15px; color: #666; font-size: 1rem;">
+                            This waste type represents ${waste.percentage} of typical household waste
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card detailed-info">
+                    <h2 style="margin-bottom: 20px;">Waste Information & Recycling Guide</h2>
+                    
+                    <div style="background: #f0fdf4; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #22c55e;">
+                        <h3 style="color: #166534; margin-bottom: 15px;">📋 About ${waste.name}</h3>
+                        <p style="color: #166534; line-height: 1.6;">
+                            ${waste.description}
+                        </p>
+                    </div>
+
+                    <div class="info-section recycling-section">
+                        <h3>♻️ How to Recycle This Waste</h3>
+                        <ul class="instructions-list">
+                            ${waste.recycling_instructions.map(instruction => `<li>${instruction}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="info-section environmental-section">
+                        <h3>🌍 Environmental Impact</h3>
+                        <p style="color: #1e40af; line-height: 1.6;">
+                            ${waste.environmental_impact}
+                        </p>
+                    </div>
+
+                    <div style="background: #fef3c7; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                        <h3 style="color: #92400e; margin-bottom: 10px;">💡 Quick Tip</h3>
+                        <p style="color: #92400e; font-size: 0.95rem;">
+                            ${getQuickTip(wasteType)}
+                        </p>
+                    </div>
+
+                    <div class="actions">
+                        <a href="home.html" class="btn">♻️ Identify Another Item</a>
+                        <button class="btn btn-secondary" onclick="downloadWasteInfo('${wasteType}')">📄 Download Guide</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('resultsContent').innerHTML = resultsHTML;
+        }
+
+        function getWasteAnalysisDescription(wasteType) {
+            const descriptions = {
+                'organic': 'Identified biodegradable material with natural organic composition',
+                'plastic': 'Detected synthetic polymer material with characteristic plastic properties',
+                'paper': 'Recognized fibrous cellulose-based material with paper-like texture',
+                'metal': 'Identified metallic material with reflective surface properties',
+                'glass': 'Detected transparent/translucent silica-based glass material',
+                'electronic': 'Recognized electronic device with circuit components and mixed materials'
+            };
+            
+            return descriptions[wasteType] || 'Material analysis completed';
+        }
+
+        function getQuickTip(wasteType) {
+            const tips = {
+                'organic': 'Remember: If it grew from nature, it can return to nature through composting!',
+                'plastic': 'Look for the recycling number (1-7) on the bottom - it tells you exactly how to recycle it.',
+                'paper': 'Keep it clean and dry for best recycling results. Wet or greasy paper can contaminate other recyclables.',
+                'metal': 'Metals are infinitely recyclable! Rinse containers and remove labels for best results.',
+                'glass': 'Glass can be recycled endlessly without losing quality. Remove caps and rinse before recycling.',
+                'electronic': 'Never throw e-waste in regular trash! Find a certified e-waste recycling center near you.'
+            };
+            
+            return tips[wasteType] || 'Proper disposal helps protect our environment!';
+        }
+
+        function getWasteData() {
+            return {
+                organic: {
+                    name: 'Organic Waste',
+                    icon: '🟢',
+                    percentage: '~30%',
+                    description: 'Organic waste consists of biodegradable materials like food scraps, yard trimmings, and other natural materials. When properly composted, organic waste becomes valuable soil amendment while reducing harmful methane emissions from landfills.',
+                    recycling_instructions: [
+                        'Separate from other waste types completely',
+                        'Remove any non-organic materials like plastic stickers or ties',
+                        'Use home composting bin or municipal organic waste program',
+                        'Avoid composting meat, dairy, or oily foods in home systems',
+                        'Turn compost regularly and maintain proper moisture levels',
+                        'Finished compost can be used to enrich garden soil'
+                    ],
+                    environmental_impact: 'Proper composting of organic waste reduces methane emissions from landfills by up to 50% and creates nutrient-rich soil amendments that support sustainable agriculture while reducing the need for chemical fertilizers.'
+                },
+                plastic: {
+                    name: 'Plastic Waste',
+                    icon: '🔵',
+                    percentage: '~12%',
+                    description: 'Plastic waste includes various polymer-based materials such as bottles, containers, and packaging. Different plastic types (numbered 1-7) require specific recycling processes, making proper identification and sorting crucial for effective recycling.',
+                    recycling_instructions: [
+                        'Check the recycling number (1-7) on the bottom of the item',
+                        'Rinse containers thoroughly to remove all food residue',
+                        'Remove caps, lids, and labels if required by your local facility',
+                        'Place in designated plastic recycling bin or container',
+                        'Never mix different plastic types together',
+                        'Avoid putting plastic bags in curbside recycling bins'
+                    ],
+                    environmental_impact: 'Recycling plastic reduces the need for virgin plastic production, saving petroleum resources and reducing greenhouse gas emissions by up to 70%. Each recycled plastic bottle saves enough energy to power a light bulb for 3 hours.'
+                },
+                paper: {
+                    name: 'Paper Waste',
+                    icon: '🟡',
+                    percentage: '~27%',
+                    description: 'Paper waste includes newspapers, magazines, cardboard, office paper, and packaging materials. Most paper products can be recycled 5-7 times before the fibers become too short for further processing, making it a highly sustainable material.',
+                    recycling_instructions: [
+                        'Remove all plastic components, tape, and metal staples',
+                        'Keep paper clean, dry, and free from food contamination',
+                        'Separate different paper types if required by local guidelines',
+                        'Place in designated paper recycling bin',
+                        'Avoid recycling paper with heavy wax coatings or lamination',
+                        'Shred confidential documents before recycling'
+                    ],
+                    environmental_impact: 'Recycling paper saves trees, reduces water usage by 50%, and decreases energy consumption by 40% compared to making paper from virgin materials. One ton of recycled paper saves 17 trees and 7,000 gallons of water.'
+                },
+                metal: {
+                    name: 'Metal Waste',
+                    icon: '⚪',
+                    percentage: '~8%',
+                    description: 'Metal waste includes aluminum cans, steel containers, and other metallic objects. Metals are among the most valuable recyclable materials because they can be recycled indefinitely without losing their structural properties or quality.',
+                    recycling_instructions: [
+                        'Rinse all containers thoroughly to remove food residue',
+                        'Remove paper labels and plastic components if possible',
+                        'Separate aluminum from steel if required by your facility',
+                        'Place in designated metal recycling bin',
+                        'Check if bottle caps and lids need to be removed',
+                        'Crush cans to save space but keep them recognizable'
+                    ],
+                    environmental_impact: 'Metal recycling saves 95% of the energy required to produce new metal from ore. Recycling aluminum cans saves enough energy to power a TV for 3 hours per can, while steel recycling reduces air pollution by 85%.'
+                },
+                glass: {
+                    name: 'Glass Waste',
+                    icon: '🔷',
+                    percentage: '~5%',
+                    description: 'Glass waste includes bottles, jars, and other glass containers. Glass is 100% recyclable and can be recycled endlessly without loss of quality or purity, making it one of the most sustainable packaging materials available.',
+                    recycling_instructions: [
+                        'Rinse containers thoroughly to remove all contents',
+                        'Remove metal lids, caps, and plastic labels completely',
+                        'Separate by color (clear, brown, green) if required locally',
+                        'Place in designated glass recycling bin',
+                        'Never mix with other glass types like windows or mirrors',
+                        'Handle carefully to avoid cuts from broken pieces'
+                    ],
+                    environmental_impact: 'Glass recycling reduces raw material extraction and saves energy. Using recycled glass in manufacturing reduces air pollution by 20% and water pollution by 50%, while every ton of recycled glass saves 1,300 pounds of sand.'
+                },
+                electronic: {
+                    name: 'Electronic Waste',
+                    icon: '🟣',
+                    percentage: '~2%',
+                    description: 'Electronic waste (e-waste) includes computers, phones, batteries, and other electronic devices. These items contain valuable materials like gold and silver, but also hazardous substances that require specialized handling and processing.',
+                    recycling_instructions: [
+                        'Take to certified e-waste recycling facility only',
+                        'Remove and securely delete all personal data from devices',
+                        'Keep components and accessories together when possible',
+                        'Check for manufacturer take-back or trade-in programs',
+                        'Never dispose of e-waste in regular household trash',
+                        'Remove batteries separately if possible for proper disposal'
+                    ],
+                    environmental_impact: 'Proper e-waste recycling recovers valuable materials like gold, silver, and rare earth elements while preventing toxic substances like lead and mercury from contaminating soil and water sources, protecting both human health and the environment.'
+                }
+            };
+        }
+
+        function downloadWasteInfo(wasteType) {
+            const wasteData = getWasteData();
+            const waste = wasteData[wasteType];
+            
+            const guideContent = `
+CleanTech - ${waste.name} Recycling Guide
+${'='.repeat(40 + waste.name.length)}
+
+WASTE TYPE: ${waste.name.toUpperCase()}
+Percentage of Household Waste: ${waste.percentage}
+Date Generated: ${new Date().toLocaleString()}
+
+DESCRIPTION:
+${waste.description}
+
+RECYCLING INSTRUCTIONS:
+${waste.recycling_instructions.map((instruction, index) => `${index + 1}. ${instruction}`).join('\n')}
+
+ENVIRONMENTAL IMPACT:
+${waste.environmental_impact}
+
+QUICK TIP:
+${getQuickTip(wasteType)}
+
+Remember: Proper waste sorting and recycling helps create a sustainable future!
+
+Generated by CleanTech AI Waste Identification Tool
+            `;
+
+            downloadFile(guideContent, `${waste.name.replace(' ', '_')}_Recycling_Guide_${new Date().toISOString().split('T')[0]}.txt`);
+        }
+
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
